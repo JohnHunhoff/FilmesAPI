@@ -1,7 +1,6 @@
 # FilmesAPI
 
-This is developer with csharp and dotnet using docker conteiners.
-
+This has developed with csharp and dotnet using docker containers.
 ## For Run this project:
 
 ### __Requirements:__
@@ -28,7 +27,7 @@ Run the image
 
 #### 3. Create local Network
 
-to connect api container with sql container is necessary a local network
+to connect api container on sql container is necessary a local network
 
 Create the local network
 >```powershell
