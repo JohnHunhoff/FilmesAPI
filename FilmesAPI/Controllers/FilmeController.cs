@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using FilmesAPI.Data;
-using FilmesAPI.Data.DTO;
+using FilmesAPI.Data.DTO.Filme;
 using FilmesAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,10 +11,10 @@ namespace FilmesAPI.Controllers
     public class FilmeController : ControllerBase
     {
 
-        private FilmeContext _context;
+        private Data.ApiContext _context;
         private IMapper _mapper;
 
-        public FilmeController(FilmeContext context, IMapper mapper)
+        public FilmeController(ApiContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
@@ -27,17 +27,23 @@ namespace FilmesAPI.Controllers
             Filme filme = _mapper.Map<Filme>(filmeDTO);
             _context.Filmes.Add(filme);
             _context.SaveChanges();
-            return CreatedAtAction(nameof(RecuperaFilmes), new {id = filme.Id} , filme);
+            return CreatedAtAction(nameof(GetFilme), new {id = filme.Id} , filme);
         }
 
         [HttpGet]
-        public IEnumerable<Filme> RecuperaFilmes() 
+        public async Task<ActionResult<IEnumerable<ReadFilmeDTO>>> GetFilmes([FromQuery] int? classificacaoEtaria = null) 
         {
-            return _context.Filmes; 
+            var filmes =  _context.Filmes.Where(filme => filme.ClassificacaoEtaria <= classificacaoEtaria).ToList();
+            if (filmes != null) 
+            { 
+                List<ReadFilmeDTO> readDTO = _mapper.Map<List<ReadFilmeDTO>>(filmes);
+                return Ok(readDTO);
+            }
+            return NotFound(); 
         }
 
         [HttpGet("{id}")]
-        public IActionResult RecuperaFilmes(int id)
+        public IActionResult GetFilme(int id)
         {
             var filme = _context.Filmes.FirstOrDefault(f => f.Id == id);
             if (filme != null)
@@ -50,7 +56,7 @@ namespace FilmesAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult AtualizaFilme(int id, [FromBody] UpdateFilmeDTO filmeNovoDTO)
+        public IActionResult PutFilme(int id, [FromBody] UpdateFilmeDTO filmeNovoDTO)
         {
             var filme = _context.Filmes.FirstOrDefault(f => f.Id == id);
             if (filme == null)

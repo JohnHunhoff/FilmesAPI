@@ -4,6 +4,7 @@ using FilmesAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FilmesAPI.Migrations
 {
     [DbContext(typeof(ApiContext))]
-    partial class FilmeContextModelSnapshot : ModelSnapshot
+    [Migration("20220102140401_Sessoes")]
+    partial class Sessoes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -120,7 +122,7 @@ namespace FilmesAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Gerentes");
+                    b.ToTable("Gerente");
                 });
 
             modelBuilder.Entity("FilmesAPI.Models.Sessao", b =>
@@ -146,7 +148,7 @@ namespace FilmesAPI.Migrations
 
                     b.HasIndex("FilmeId");
 
-                    b.ToTable("Sessoes");
+                    b.ToTable("Sessao");
                 });
 
             modelBuilder.Entity("FilmesAPI.Models.Cinema", b =>

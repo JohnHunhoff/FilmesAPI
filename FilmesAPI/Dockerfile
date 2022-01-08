@@ -8,6 +8,7 @@ FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 COPY ["FilmesAPI/FilmesAPI.csproj", "FilmesAPI/"]
 RUN dotnet restore "FilmesAPI/FilmesAPI.csproj"
+RUN dotnet ef database update
 COPY . .
 WORKDIR "/src/FilmesAPI"
 RUN dotnet build "FilmesAPI.csproj" -c Release -o /app/build
