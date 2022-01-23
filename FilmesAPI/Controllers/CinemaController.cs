@@ -23,7 +23,7 @@ namespace FilmesAPI.Controllers
 
 
         [HttpPost]
-        public IActionResult AdicionaCinema([FromBody] CreateCinemaDto cinemaDto)
+        public IActionResult PostCinema([FromBody] CreateCinemaDto cinemaDto)
         {
             Cinema? cinema = _mapper.Map<Cinema>(cinemaDto);
             _context.Cinemas.Add(cinema);
@@ -32,16 +32,16 @@ namespace FilmesAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ReadCinemaDTO>>> RecuperaCinemas()
+        public async Task<ActionResult<IEnumerable<ReadCinemaDto>>> RecuperaCinemas()
         {
             var cinemas = await _context.Cinemas.ToListAsync();
-            var readCinemaDTOs = new List<ReadCinemaDTO>();
+            var readCinemaDtOs = new List<ReadCinemaDto>();
 
             foreach (var cinema in cinemas)
             {
-                readCinemaDTOs.Add(_mapper.Map<ReadCinemaDTO>(cinema));
+                readCinemaDtOs.Add(_mapper.Map<ReadCinemaDto>(cinema));
             }
-            return readCinemaDTOs;
+            return readCinemaDtOs;
         }
 
         [HttpGet("{id}")]
@@ -50,7 +50,7 @@ namespace FilmesAPI.Controllers
             Cinema? cinema = _context.Cinemas.FirstOrDefault(cinema => cinema.Id == id);
             if (cinema != null)
             {
-                ReadCinemaDTO cinemaDto = _mapper.Map<ReadCinemaDTO>(cinema);
+                ReadCinemaDto cinemaDto = _mapper.Map<ReadCinemaDto>(cinema);
                 return Ok(cinemaDto);
             }
             return NotFound();

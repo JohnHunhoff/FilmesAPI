@@ -2,7 +2,7 @@
 
 namespace FilmesAPI.Data.DTO.Gerente
 {
-    public class UpdateGerenteDTO
+    public class UpdateGerenteDto
     {
         public string Nome { get; set; }
     }

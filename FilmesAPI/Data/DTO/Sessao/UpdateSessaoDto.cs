@@ -1,6 +1,6 @@
 ﻿namespace FilmesAPI.Data.DTO.Sessao
 {
-    public class UpdateSessaoDTO
+    public class UpdateSessaoDto
     {
         public int FilmeId { get; set; }
         public int CinemaId { get; set; }

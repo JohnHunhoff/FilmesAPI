@@ -1,7 +1,7 @@
 ﻿using FilmesAPI.Models;
 namespace FilmesAPI.Data.DTO.Sessao
 {
-    public class ReadSessaoDTO
+    public class ReadSessaoDto
     {
         public int Id { get; set; }
         public DateTime HorarioDeEncerramento { get; set; }

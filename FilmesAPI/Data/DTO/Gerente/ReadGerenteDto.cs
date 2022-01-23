@@ -2,7 +2,7 @@
 
 namespace FilmesAPI.Data.DTO.Gerente
 {
-    public class ReadGerenteDTO
+    public class ReadGerenteDto
     {
         public string Nome { get; set; }
         public object? Cinemas { get; set; }

@@ -33,18 +33,18 @@ namespace FilmesAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<ReadEnderecoDTO>> GetEndereco(int id)
+        public async Task<ActionResult<ReadEnderecoDto>> GetEndereco(int id)
         {
             var endereco = await _context.Enderecos.FindAsync(id);
 
-            var enderecoDTO = _mapper.Map<ReadEnderecoDTO>(endereco);
+            var enderecoDto = _mapper.Map<ReadEnderecoDto>(endereco);
 
-            if (enderecoDTO == null)
+            if (enderecoDto == null)
             {
                 return NotFound();
             }
 
-            return enderecoDTO;
+            return enderecoDto;
         }
 
         [HttpPut("{id}")]
@@ -78,9 +78,9 @@ namespace FilmesAPI.Controllers
 
        
         [HttpPost]
-        public async Task<ActionResult<Endereco>> PostEndereco([FromBody]CreateEnderecoDTO enderecoDTO)
+        public async Task<ActionResult<Endereco>> PostEndereco([FromBody]CreateEnderecoDto enderecoDto)
         {
-            Endereco endereco = _mapper.Map<Endereco>(enderecoDTO);
+            Endereco endereco = _mapper.Map<Endereco>(enderecoDto);
 
             _context.Enderecos.Add(endereco);
             await _context.SaveChangesAsync();

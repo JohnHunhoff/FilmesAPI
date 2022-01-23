@@ -2,7 +2,7 @@
 using FilmesAPI.Models;
 namespace FilmesAPI.Data.DTO.Cinema
 {
-    public class ReadCinemaDTO
+    public class ReadCinemaDto
     {
         [Key]
         [Required]

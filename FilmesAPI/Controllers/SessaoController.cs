@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using FilmesAPI.Data;
 using FilmesAPI.Models;
 using AutoMapper;
+using FilmesAPI.Data.DTO.Sessao;
 
 namespace FilmesAPI.Controllers
 {
@@ -74,8 +75,9 @@ namespace FilmesAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Sessao>> PostSessao(Sessao sessao)
+        public async Task<ActionResult<Sessao>> PostSessao(CreateSessaoDto sessaoDto)
         {
+            var sessao = _mapper.Map<Sessao>(sessaoDto);
             _context.Sessoes.Add(sessao);
             await _context.SaveChangesAsync();
 

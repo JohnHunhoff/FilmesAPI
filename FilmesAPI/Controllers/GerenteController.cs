@@ -27,21 +27,21 @@ namespace FilmesAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ReadGerenteDTO>>> GetGerente()
+        public async Task<ActionResult<IEnumerable<ReadGerenteDto>>> GetGerente()
         {
             var gerentes = await _context.Gerentes.ToListAsync();
-            var readGerenteDTOs = new List<ReadGerenteDTO>();
+            var readGerenteDtOs = new List<ReadGerenteDto>();
 
             foreach (var gerente in gerentes)
             {
-                readGerenteDTOs.Add(_mapper.Map<ReadGerenteDTO>(gerente));
+                readGerenteDtOs.Add(_mapper.Map<ReadGerenteDto>(gerente));
             }
 
-            return readGerenteDTOs;
+            return readGerenteDtOs;
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<ReadGerenteDTO>> GetGerente(int id)
+        public async Task<ActionResult<ReadGerenteDto>> GetGerente(int id)
         {
             var gerente = await _context.Gerentes.FindAsync(id);
 
@@ -50,13 +50,13 @@ namespace FilmesAPI.Controllers
                 return NotFound();
             }
 
-            ReadGerenteDTO readGerenteDTO = _mapper.Map<ReadGerenteDTO>(gerente);
+            ReadGerenteDto readGerenteDto = _mapper.Map<ReadGerenteDto>(gerente);
 
-            return readGerenteDTO;
+            return readGerenteDto;
         }
  
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutGerente(int id, UpdateGerenteDTO gerenteDTO)
+        public async Task<IActionResult> PutGerente(int id, UpdateGerenteDto gerenteDto)
         {
             var gerente = _context.Gerentes.Find(id);
 
@@ -65,7 +65,7 @@ namespace FilmesAPI.Controllers
                 return NotFound();
             }
 
-            _mapper.Map(gerenteDTO, gerente);
+            _mapper.Map(gerenteDto, gerente);
             _context.Entry(gerente).State = EntityState.Modified;
             try
             {
@@ -87,9 +87,9 @@ namespace FilmesAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Gerente>> PostGerente(CreateGerenteDTO gerenteDTO)
+        public async Task<ActionResult<Gerente>> PostGerente(CreateGerenteDto gerenteDto)
         {
-            var gerente = _mapper.Map<Gerente>(gerenteDTO);
+            var gerente = _mapper.Map<Gerente>(gerenteDto);
             _context.Gerentes.Add(gerente);
             await _context.SaveChangesAsync();
 
