@@ -20,6 +20,8 @@ builder.Services.AddDbContext<FilmesAPI.Data.ApiContext>(
         }  
     );
 builder.Services.AddScoped<FilmeService, FilmeService>();
+builder.Services.AddScoped<CinemaService, CinemaService>();
+
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
