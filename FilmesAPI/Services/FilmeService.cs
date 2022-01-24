@@ -50,7 +50,7 @@ namespace FilmesAPI.Services
             return null;
         }
 
-        public async Task<ReadFilmeDto>? GetFilmeById(int id)
+        public async Task<ReadFilmeDto?> GetFilmeById(int id)
         {
             ReadFilmeDto? readFilmeDto = null;
             var filme = await _context.Filmes.FirstOrDefaultAsync(f => f.Id == id);

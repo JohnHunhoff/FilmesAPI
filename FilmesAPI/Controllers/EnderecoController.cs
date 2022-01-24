@@ -10,6 +10,9 @@ using FilmesAPI.Data;
 using FilmesAPI.Models;
 using FilmesAPI.Data.DTO.Endereco;
 using AutoMapper;
+using FilmesAPI.Services;
+using Castle.Core.Internal;
+using FluentResults;
 
 namespace FilmesAPI.Controllers
 {
@@ -17,95 +20,54 @@ namespace FilmesAPI.Controllers
     [ApiController]
     public class EnderecoController : ControllerBase
     {
-        private readonly ApiContext _context;
-        private readonly IMapper _mapper;
+        private readonly EnderecoService _enderecoService;
 
-        public EnderecoController(ApiContext context, IMapper mapper)
+        public EnderecoController(EnderecoService enderecoService)
         {
-            _context = context;
-            _mapper = mapper;
+            _enderecoService = enderecoService;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Endereco>>> GetEndereco()
+        public async Task<ActionResult<IEnumerable<ReadEnderecoDto>>> GetEndereco()
         {
-            return await _context.Enderecos.ToListAsync();
+            var readEnderecoDto = await _enderecoService.GetEnderecos();          
+            return Ok(readEnderecoDto);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<ReadEnderecoDto>> GetEndereco(int id)
         {
-            var endereco = await _context.Enderecos.FindAsync(id);
-
-            var enderecoDto = _mapper.Map<ReadEnderecoDto>(endereco);
-
-            if (enderecoDto == null)
-            {
-                return NotFound();
-            }
-
-            return enderecoDto;
+            var readEnderecoDto = await _enderecoService.GetEnderecoById(id);
+            ActionResult response = (readEnderecoDto != null) ? Ok(readEnderecoDto) : NotFound();
+            return response;
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutEndereco(int id, Endereco endereco)
-        {
-            if (id != endereco.Id)
-            {
-                return BadRequest();
-            }
+        public async Task<IActionResult> PutEndereco(int id, CreateEnderecoDto enderecoDto)
+        {          
+            Result result = await _enderecoService.UpdateEndereco(id, enderecoDto);
+            ActionResult response = (result.IsFailed) ? NotFound() : NoContent();
 
-            _context.Entry(endereco).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!EnderecoExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
+            return response;
         }
 
        
         [HttpPost]
-        public async Task<ActionResult<Endereco>> PostEndereco([FromBody]CreateEnderecoDto enderecoDto)
+        public async Task<ActionResult<ReadEnderecoDto>> PostEndereco([FromBody]CreateEnderecoDto enderecoDto)
         {
-            Endereco endereco = _mapper.Map<Endereco>(enderecoDto);
-
-            _context.Enderecos.Add(endereco);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetEndereco", new { id = endereco.Id }, endereco);
+            ReadEnderecoDto readEnderecoDto = await _enderecoService.CreateEndereco(enderecoDto);        
+            return CreatedAtAction("GetEndereco", new { id = readEnderecoDto.Id }, readEnderecoDto);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEndereco(int id)
         {
-            var endereco = await _context.Enderecos.FindAsync(id);
-            if (endereco == null)
-            {
-                return NotFound();
-            }
+            Result result = await _enderecoService.DeleteEndereco(id);
+            ActionResult response = (result.IsFailed) ? NotFound() : NoContent();
 
-            _context.Enderecos.Remove(endereco);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            return response;
         }
 
-        private bool EnderecoExists(int id)
-        {
-            return _context.Enderecos.Any(e => e.Id == id);
-        }
+        
     }
 }
