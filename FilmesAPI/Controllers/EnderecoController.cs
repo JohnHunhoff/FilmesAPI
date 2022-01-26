@@ -50,7 +50,6 @@ namespace FilmesAPI.Controllers
 
             return response;
         }
-
        
         [HttpPost]
         public async Task<ActionResult<ReadEnderecoDto>> PostEndereco([FromBody]CreateEnderecoDto enderecoDto)
@@ -66,8 +65,6 @@ namespace FilmesAPI.Controllers
             ActionResult response = (result.IsFailed) ? NotFound() : NoContent();
 
             return response;
-        }
-
-        
+        }      
     }
 }

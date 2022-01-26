@@ -10,6 +10,8 @@ using FilmesAPI.Data;
 using FilmesAPI.Models;
 using AutoMapper;
 using FilmesAPI.Data.DTO.Sessao;
+using FilmesAPI.Services;
+using FluentResults;
 
 namespace FilmesAPI.Controllers
 {
@@ -19,89 +21,55 @@ namespace FilmesAPI.Controllers
     {
         private readonly ApiContext _context;
         private readonly IMapper _mapper;
+        private readonly SessaoService _sessaoService;
 
-        public SessaoController(ApiContext context, IMapper mapper)
+        public SessaoController(ApiContext context, IMapper mapper, SessaoService sessaoService)
         {
             _context = context;
             _mapper = mapper;
+            _sessaoService = sessaoService;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Sessao>>> GetSessoes()
+        public async Task<ActionResult<IEnumerable<ReadSessaoDto>>> GetSessoes()
         {
-            return await _context.Sessoes.ToListAsync();
+            var readSessaoDto = await _sessaoService.GetSessoes();
+            return Ok(readSessaoDto);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Sessao>> GetSessao(int id)
+        public async Task<ActionResult<ReadSessaoDto>> GetSessao(int id)
         {
-            var sessao = await _context.Sessoes.FindAsync(id);
-
-            if (sessao == null)
-            {
-                return NotFound();
-            }
-
-            return sessao;
+            ReadSessaoDto readSessaoDto = await _sessaoService.GetSessaoById(id);
+            ActionResult response = (readSessaoDto != null) ? Ok(readSessaoDto) : NotFound();
+            
+            return response;
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutSessao(int id, Sessao sessao)
+        public async Task<ActionResult> PutSessao(int id, UpdateSessaoDto sessaoDto)
         {
-            if (id != sessao.Id)
-            {
-                return BadRequest();
-            }
+            Result result = await _sessaoService.UpdateSessao(id, sessaoDto);
+            ActionResult response = (result.IsSuccess) ? NoContent() : NotFound();
 
-            _context.Entry(sessao).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!SessaoExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
+            return response;
         }
 
         [HttpPost]
         public async Task<ActionResult<Sessao>> PostSessao(CreateSessaoDto sessaoDto)
         {
-            var sessao = _mapper.Map<Sessao>(sessaoDto);
-            _context.Sessoes.Add(sessao);
-            await _context.SaveChangesAsync();
+            ReadSessaoDto readSessaoDto = await _sessaoService.CreateSessao(sessaoDto);
+            
 
-            return CreatedAtAction("GetSessao", new { id = sessao.Id }, sessao);
+            return CreatedAtAction("GetSessao", new { id = readSessaoDto.Id }, readSessaoDto);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteSessao(int id)
         {
-            var sessao = await _context.Sessoes.FindAsync(id);
-            if (sessao == null)
-            {
-                return NotFound();
-            }
-
-            _context.Sessoes.Remove(sessao);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool SessaoExists(int id)
-        {
-            return _context.Sessoes.Any(e => e.Id == id);
+            Result result = await _sessaoService.DeleteSessao(id);
+            ActionResult response = (result.IsSuccess) ? NoContent() : NotFound();
+            return response;
         }
     }
 }

@@ -22,6 +22,8 @@ builder.Services.AddDbContext<FilmesAPI.Data.ApiContext>(
 builder.Services.AddScoped<FilmeService, FilmeService>();
 builder.Services.AddScoped<CinemaService, CinemaService>();
 builder.Services.AddScoped<EnderecoService, EnderecoService>();
+builder.Services.AddScoped<GerenteService, GerenteService>();
+builder.Services.AddScoped<SessaoService, SessaoService>();
 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

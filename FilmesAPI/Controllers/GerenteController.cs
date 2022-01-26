@@ -9,7 +9,11 @@ using Microsoft.EntityFrameworkCore;
 using FilmesAPI.Data;
 using FilmesAPI.Models;
 using AutoMapper;
+using FilmesAPI.Data.DTO.Cinema;
 using FilmesAPI.Data.DTO.Gerente;
+using FilmesAPI.Migrations;
+using FilmesAPI.Services;
+using FluentResults;
 
 namespace FilmesAPI.Controllers
 {
@@ -17,103 +21,50 @@ namespace FilmesAPI.Controllers
     [ApiController]
     public class GerenteController : ControllerBase
     {
-        private readonly ApiContext _context;
-        private readonly IMapper _mapper;
+        private readonly GerenteService _gerenteService;
 
-        public GerenteController(ApiContext context, IMapper mapper)
+        public GerenteController(GerenteService gerenteService)
         {
-            _context = context;
-            _mapper = mapper;
+            _gerenteService = gerenteService;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ReadGerenteDto>>> GetGerente()
         {
-            var gerentes = await _context.Gerentes.ToListAsync();
-            var readGerenteDtOs = new List<ReadGerenteDto>();
-
-            foreach (var gerente in gerentes)
-            {
-                readGerenteDtOs.Add(_mapper.Map<ReadGerenteDto>(gerente));
-            }
-
-            return readGerenteDtOs;
+            IEnumerable<ReadGerenteDto> readGerenteDto = await _gerenteService.GetGerentes();
+            return Ok(readGerenteDto);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<ReadGerenteDto>> GetGerente(int id)
         {
-            var gerente = await _context.Gerentes.FindAsync(id);
-
-            if (gerente == null)
-            {
-                return NotFound();
-            }
-
-            ReadGerenteDto readGerenteDto = _mapper.Map<ReadGerenteDto>(gerente);
-
-            return readGerenteDto;
+            var readGerenteDto = await _gerenteService.GetGerenteById(id);
+            ActionResult response = (readGerenteDto != null) ? Ok(readGerenteDto) : NotFound();
+            
+            return response;
         }
  
         [HttpPut("{id}")]
         public async Task<IActionResult> PutGerente(int id, UpdateGerenteDto gerenteDto)
         {
-            var gerente = _context.Gerentes.Find(id);
-
-            if (gerente == null)
-            {
-                return NotFound();
-            }
-
-            _mapper.Map(gerenteDto, gerente);
-            _context.Entry(gerente).State = EntityState.Modified;
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!GerenteExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
+            Result result = await _gerenteService.UpdateGerente(id, gerenteDto);
+            ActionResult response = (result.IsSuccess) ? NoContent() : NotFound();
+            return response;
         }
 
         [HttpPost]
-        public async Task<ActionResult<Gerente>> PostGerente(CreateGerenteDto gerenteDto)
+        public async Task<ActionResult<ReadGerenteDto>> PostGerente(CreateGerenteDto gerenteDto)
         {
-            var gerente = _mapper.Map<Gerente>(gerenteDto);
-            _context.Gerentes.Add(gerente);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetGerente", new { id = gerente.Id }, gerente);
+            ReadGerenteDto readGerenteDto = await _gerenteService.CreateGerente(gerenteDto);
+            return CreatedAtAction("GetGerente", new { id = readGerenteDto.Id }, readGerenteDto);
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteGerente(int id)
+        public async Task<ActionResult> DeleteGerente(int id)
         {
-            var gerente = await _context.Gerentes.FindAsync(id);
-            if (gerente == null)
-            {
-                return NotFound();
-            }
-
-            _context.Gerentes.Remove(gerente);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool GerenteExists(int id)
-        {
-            return _context.Gerentes.Any(e => e.Id == id);
+            Result result = await _gerenteService.DeleteGerente(id);
+            ActionResult response = (result.IsSuccess) ? NoContent() : NotFound();
+            return response;
         }
     }
 }
